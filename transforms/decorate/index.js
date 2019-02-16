@@ -49,7 +49,7 @@ module.exports = function transformer(file, api) {
     ast,
     j
   );
-  renameImport('@ember/service', '@ember-decorators/service', ast, j);
+  renameServiceImport(ast, j);
   reviseComputedImport(ast, j);
 
   convertComputedToDecorator(ast, j);
@@ -161,6 +161,22 @@ function renameImport(from, to, ast, j) {
   if (computedImport.length) {
     computedImport.get().node.source.value = to;
   }
+}
+
+function renameServiceImport(ast, j) {
+  const serviceImport = ast
+    .find(j.ImportDeclaration, {
+      source: { value: '@ember/service' }
+    })
+    .filter((nodePath) => {
+      return (
+        j(nodePath).find(j.Specifier, { local: { name: 'service' } }).length !== 0
+      );
+    });
+
+  if (serviceImport.length === 0) { return; }
+
+  serviceImport.get().node.source.value = '@ember-decorators/service';
 }
 
 function getNamedProperties(name, ast, j) {
