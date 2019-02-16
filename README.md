@@ -5,6 +5,10 @@ A collection of codemod's for converting class properties to decorated propertie
 
 This codemod is currently a work in progress, so treat it as experimental!  If you find a problem, please report it (or better still, fix and pull request :) )
 
+# Known Issues
+
+There is currently an issue in larger files where some of the whitespace is being lost.  You may need to run your preferred code formatter again after applying this codemod.
+
 ## Usage
 
 To run a specific codemod from this project, you would run the following:
