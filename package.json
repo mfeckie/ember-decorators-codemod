@@ -17,6 +17,7 @@
     "@types/jest": "^24.0.5",
     "@types/jscodeshift": "^0.6.0",
     "@types/node": "^11.9.4",
+    "ember-source": "^3.7.3",
     "jest": "^23.1.0",
     "jscodeshift-helper": "^1.1.0",
     "ts-jest": "^23.10.5",
