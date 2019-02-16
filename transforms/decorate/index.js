@@ -104,7 +104,12 @@ function buildComputedGet(methodName, args, j) {
 
 function reviseComputedImport(ast, j) {
   if (usesComputed(ast, j)) {
-    const finder = findImport('@ember/object', ast, j);
+    const finder = findImport('@ember/object', ast, j).filter((node) => {
+      return (
+        j(node).find(j.Specifier, { imported: { name: 'computed' } }).length !==
+        0
+      );
+    });
     if (finder.length !== 0) {
       const node = finder.get().node;
       const filtered = node.specifiers.filter(
