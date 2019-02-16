@@ -28,6 +28,8 @@ import {
   reads,
   readOnly,
   setDiff,
+  sort,
+  sortBy,
   sum,
   union,
   uniq,
@@ -73,6 +75,16 @@ export default class Foo {
   @readOnly('foo') computedReadOnly;
   @setDiff('foo', 'bar') computedSetDiff;
   @sum('foo') computedSum;
+  @sort('foo', function(a, b){
+    if (a.priority > b.priority) {
+      return 1;
+    } else if (a.priority < b.priority) {
+      return -1;
+    }
+
+    return 0;
+  }) computedSort;
+  @sortBy('foo', 'bar') computedSortBy;
   @union('foo') computedUnion;
   @uniq('foo') computedUniq;
   @uniqBy('foo', 'bar') computedUniqBy;

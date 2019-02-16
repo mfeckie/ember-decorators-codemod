@@ -34,6 +34,8 @@ const simpleMacros = [
   'readOnly',
   'setDiff',
   'sum',
+  'sort',
+  'sortBy',
   'union',
   'uniq',
   'uniqBy'
