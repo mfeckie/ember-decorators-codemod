@@ -1,6 +1,6 @@
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
-import { computed, get, set } from '@ember/object';
+import { computed } from '@ember/object';
 import { action } from '@ember-decorators/object';
 
 export default class FooComponent extends Component {

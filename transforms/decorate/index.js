@@ -110,7 +110,12 @@ function reviseComputedImport(ast, j) {
       const filtered = node.specifiers.filter(
         (item) => item.imported.name !== 'computed'
       );
+
       node.specifiers = filtered;
+
+      if (node.specifiers.length === 0) {
+        finder.remove();
+      }
     }
 
     if (hasImport('@ember-decorators/object', ast, j)) {
