@@ -17,6 +17,7 @@ ember-decorators-codemod decorate-computed-macros path/of/files/ or/some**/*glob
 <!--FIXTURES_TOC_START-->
 * [basic](#basic)
 * [component](#component)
+* [component_with_initial_import](#component_with_initial_import)
 <!--FIXTURES_TOC_END-->
 
 <!--FIXTURES_CONTENT_START-->
@@ -27,7 +28,7 @@ ember-decorators-codemod decorate-computed-macros path/of/files/ or/some**/*glob
 ```ts
 import { inject as service } from '@ember/service';
 
-import { computed } from '@ember/object';
+import { computed, get, set } from '@ember/object';
 
 import {
   alias,
@@ -126,7 +127,7 @@ export default class Foo {
 ```ts
 import { inject as service } from '@ember-decorators/service';
 
-import { computed } from '@ember-decorators/object';
+import { computed, get, set } from '@ember/object';
 
 import {
   alias,
@@ -227,21 +228,72 @@ export default class Foo {
 ```ts
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
+import { computed, get, set } from '@ember/object';
 
 export default class FooComponent extends Component {
   classNames = ['a', 'b', 'c'];
   someService = service();
+
+  foo = computed('bar', function() {
+    return '';
+  });
 }
+
 ```
 
 **Output** (<small>[component.output.ts](transforms/decorate/__testfixtures__/component.output.ts)</small>):
 ```ts
+import { computed } from '@ember-decorators/object';
 import Component from '@ember/component';
 import { inject as service } from '@ember-decorators/service';
+import { get, set } from '@ember/object';
 
 export default class FooComponent extends Component {
-  @classNames('a', 'b', 'c');
+  classNames = ['a', 'b', 'c'];
   @service() someService;
+  @computed('bar')
+  get foo() {
+    return '';
+  }
 }
+
+```
+---
+<a id="component_with_initial_import">**component_with_initial_import**</a>
+
+**Input** (<small>[component_with_initial_import.input.ts](transforms/decorate/__testfixtures__/component_with_initial_import.input.ts)</small>):
+```ts
+import Component from '@ember/component';
+import { inject as service } from '@ember/service';
+import { computed, get, set } from '@ember/object';
+import { action } from '@ember-decorators/object';
+
+export default class FooComponent extends Component {
+  classNames = ['a', 'b', 'c'];
+  someService = service();
+
+  foo = computed('bar', function() {
+    return '';
+  });
+}
+
+```
+
+**Output** (<small>[component_with_initial_import.output.ts](transforms/decorate/__testfixtures__/component_with_initial_import.output.ts)</small>):
+```ts
+import Component from '@ember/component';
+import { inject as service } from '@ember-decorators/service';
+import { get, set } from '@ember/object';
+import { action, computed } from '@ember-decorators/object';
+
+export default class FooComponent extends Component {
+  classNames = ['a', 'b', 'c'];
+  @service() someService;
+  @computed('bar')
+  get foo() {
+    return '';
+  }
+}
+
 ```
 <!--FIXTURES_CONTENT_END-->
