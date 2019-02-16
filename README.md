@@ -10,7 +10,7 @@ This codemod is currently a work in progress, so treat it as experimental!  If y
 To run a specific codemod from this project, you would run the following:
 
 ```
-npx ember-decorators-codemod <TRANSFORM NAME> path/of/files/ or/some**/*glob.js
+npx mfeckie/ember-decorators-codemod <TRANSFORM NAME> path/of/files/ or/some**/*glob.js
 
 # or
 
