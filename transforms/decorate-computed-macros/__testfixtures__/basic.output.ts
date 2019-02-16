@@ -1,5 +1,7 @@
 import { inject as service } from '@ember/service';
 
+import { computed } from '@ember-decorators/object';
+
 import {
   alias,
   and,

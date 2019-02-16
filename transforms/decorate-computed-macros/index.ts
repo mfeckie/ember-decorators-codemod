@@ -46,8 +46,8 @@ module.exports = function transformer(file: FileInfo, api: any) {
 
   const ast = j(file.source);
 
-  renameImport(ast, j);
-
+  renameImport('@ember/object/computed', '@ember-decorators/object/computed', ast, j);
+  renameImport('@ember/object', '@ember-decorators/object', ast, j);
   simpleMacros.forEach((macroName) => {
     const properties = getNamedComputed(macroName, ast, j);
 
@@ -62,17 +62,23 @@ module.exports = function transformer(file: FileInfo, api: any) {
     });
   });
 
+  const computedMacros = getNamedComputed('computed', ast, j);
+
+  computedMacros.forEach((property) => {
+
+  })
+
   return ast.toSource({ quote: 'single' });
 };
 
-function renameImport(ast: Collection<any>, j: JSCodeshift) {
+function renameImport(from: string, to: string, ast: Collection<any>, j: JSCodeshift) {
   const computedImport = ast.find(j.ImportDeclaration, {
-    source: { value: '@ember/object/computed' }
+    source: { value: from }
   });
 
   if (computedImport.length) {
     computedImport.get().node.source.value =
-      '@ember-decorators/object/computed';
+      to;
   }
 }
 

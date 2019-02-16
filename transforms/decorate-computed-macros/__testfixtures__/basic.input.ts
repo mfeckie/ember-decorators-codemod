@@ -1,5 +1,7 @@
 import { inject as service } from '@ember/service';
 
+import { computed } from '@ember/object';
+
 import {
   alias,
   and,
@@ -88,4 +90,8 @@ export default class Foo {
   computedUnion = union('foo');
   computedUniq = uniq('foo');
   computedUniqBy = uniqBy('foo', 'bar');
+
+  simpleComputed = computed('foo', function() {
+    return this.foo;
+  })
 }
