@@ -16,8 +16,10 @@ ember-decorators-codemod decorate-computed-macros path/of/files/ or/some**/*glob
 
 <!--FIXTURES_TOC_START-->
 * [basic](#basic)
+* [complex_computed](#complex_computed)
 * [component](#component)
 * [component_with_initial_import](#component_with_initial_import)
+* [service](#service)
 <!--FIXTURES_TOC_END-->
 
 <!--FIXTURES_CONTENT_START-->
@@ -222,6 +224,43 @@ export default class Foo {
 
 ```
 ---
+<a id="complex_computed">**complex_computed**</a>
+
+**Input** (<small>[complex_computed.input.ts](transforms/decorate/__testfixtures__/complex_computed.input.ts)</small>):
+```ts
+import Component from '@ember/component';
+import { computed } from '@ember/object';
+
+export default class MyComponent {
+  complexComputed = computed('foo', {
+    get() {
+      return this.foo;
+    },
+    set(key: string, value: any) {
+      this.foo = '';
+    }
+  });
+}
+
+```
+
+**Output** (<small>[complex_computed.output.ts](transforms/decorate/__testfixtures__/complex_computed.output.ts)</small>):
+```ts
+import { computed } from '@ember-decorators/object';
+import Component from '@ember/component';
+
+export default class MyComponent {
+  @computed('foo')
+  get complexComputed() {
+    return this.foo;
+  }
+  set complexComputed(value: any) {
+    this.foo = '';
+  }
+}
+
+```
+---
 <a id="component">**component**</a>
 
 **Input** (<small>[component.input.ts](transforms/decorate/__testfixtures__/component.input.ts)</small>):
@@ -265,7 +304,7 @@ export default class FooComponent extends Component {
 ```ts
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
-import { computed, get, set } from '@ember/object';
+import { computed } from '@ember/object';
 import { action } from '@ember-decorators/object';
 
 export default class FooComponent extends Component {
@@ -283,7 +322,6 @@ export default class FooComponent extends Component {
 ```ts
 import Component from '@ember/component';
 import { inject as service } from '@ember-decorators/service';
-import { get, set } from '@ember/object';
 import { action, computed } from '@ember-decorators/object';
 
 export default class FooComponent extends Component {
@@ -293,6 +331,30 @@ export default class FooComponent extends Component {
   get foo() {
     return '';
   }
+}
+
+```
+---
+<a id="service">**service**</a>
+
+**Input** (<small>[service.input.ts](transforms/decorate/__testfixtures__/service.input.ts)</small>):
+```ts
+import Service from '@ember/service';
+import { inject as service } from '@ember/service';
+
+export default class TestService extends Service {
+
+}
+
+```
+
+**Output** (<small>[service.output.ts](transforms/decorate/__testfixtures__/service.output.ts)</small>):
+```ts
+import Service from '@ember/service';
+import { inject as service } from '@ember-decorators/service';
+
+export default class TestService extends Service {
+
 }
 
 ```
