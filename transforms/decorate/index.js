@@ -70,10 +70,10 @@ module.exports = function transformer(file, api) {
 
 function convertComputedToDecorator(ast, j) {
   const computeds = getNamedProperties('computed', ast, j);
-  computeds.forEach((nodePath) => processComputed(nodePath, j));
+  computeds.forEach((nodePath) => processComputed(nodePath, ast, j));
 }
 
-function processComputed(nodePath, j) {
+function processComputed(nodePath, ast, j) {
   const node = nodePath.get().node;
   const methodName = node.key.name;
   const args = node.value.arguments;
@@ -82,7 +82,10 @@ function processComputed(nodePath, j) {
     const newNode = buildComputedGet(methodName, args, j);
     nodePath.replace(newNode);
   } else {
-    // do complex version
+    const newNode = buildComplexGetterSetter(methodName, args, j);
+    nodePath.insertAfter(newNode.setter);
+    nodePath.insertAfter(newNode.getter);
+    nodePath.replace();
   }
 }
 
@@ -100,6 +103,42 @@ function buildComputedGet(methodName, args, j) {
   newNode.body = blockStatement;
 
   return newNode;
+}
+
+function buildComplexGetterSetter(methodName, args, j) {
+  const newNode = j(`class Fake {
+    @computed()
+    get foo() {
+
+    }
+    set foo(value) {
+
+    }
+  }`);
+
+  const getSetObject = args.pop();
+
+  const newGetter = newNode.find(j.ClassMethod, { kind: 'get'}).get().node;
+  const newSetter = newNode.find(j.ClassMethod, { kind: 'set'}).get().node;
+
+  const getterDefinition = getSetObject.properties.find((np) => np.key.name === 'get');
+  const setterDefinition = getSetObject.properties.find((np) => np.key.name === 'set');
+
+  // Ember object setter has signature (key, value), native setters expect only (value)
+  const setterParams = setterDefinition.params.pop();
+
+  newGetter.key.name = methodName;
+  newSetter.key.name = methodName;
+
+  newGetter.body = getterDefinition.body;
+  newSetter.body = setterDefinition.body;
+  newSetter.params = [setterParams];
+
+  newGetter.decorators[0].expression.arguments = args;
+
+  return {
+    getter: newGetter, setter: newSetter
+  }
 }
 
 function reviseComputedImport(ast, j) {
@@ -194,7 +233,7 @@ function extractDependentKeys(node) {
 }
 
 function buildDecorator(macroName, name, dependentKeys, j) {
-  var node = j('class Fake { @' + macroName + "('') " + name + ';}')
+  var node = j('class Fake { @' + macroName + "('') " + name + '; \n}')
     .find(j.ClassProperty)
     .get().node;
 
