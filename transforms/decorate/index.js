@@ -49,7 +49,6 @@ module.exports = function transformer(file, api) {
     ast,
     j
   );
-  renameImport('@ember/object', '@ember-decorators/object', ast, j);
   renameImport('@ember/service', '@ember-decorators/service', ast, j);
 
   simpleKeywords.forEach(function(keyword) {
