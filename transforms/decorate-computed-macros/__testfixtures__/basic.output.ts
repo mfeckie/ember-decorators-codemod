@@ -4,8 +4,12 @@ import {
   alias,
   and,
   bool,
+  collect,
+  deprecatingAlias,
   empty,
   equal,
+  filter,
+  filterBy,
   gt,
   gte,
   intersect,
@@ -34,8 +38,18 @@ export default class Foo {
   @alias('testService.foo') computedAliased;
   @and('foo', 'that.foo') computedAnd;
   @bool('foo') computedBool;
+  @collect('foo') computedCollect;
+  @deprecatingAlias('person.first', {
+    id: 'user-profile.firstName',
+    until: '3.0.0',
+    url: 'https://example.com/deprecations/user-profile.firstName'
+  }) computedDeprecatingAlias;
   @empty('foo') computedEmpty;
   @equal('foo', 2) computedEqual;
+  @filter('foo', function(item, index, array) {
+    return !item.done;
+  }) computedFilter;
+  @filterBy('chores', 'done', false) computedFilterBy;
   @gt('foo', 3) computedGt;
   @gte('foo', 4) computedGte;
   @intersect('foo', 'bar') computedIntersect;
