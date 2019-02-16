@@ -52,6 +52,8 @@ module.exports = function transformer(file, api) {
   renameImport('@ember/service', '@ember-decorators/service', ast, j);
   reviseComputedImport(ast, j);
 
+  convertComputedToDecorator(ast, j);
+
   simpleKeywords.forEach(function(keyword) {
     var properties = getNamedProperties(keyword, ast, j);
 
@@ -66,6 +68,40 @@ module.exports = function transformer(file, api) {
   return ast.toSource({ quote: 'single' });
 };
 
+function convertComputedToDecorator(ast, j) {
+  const computeds = getNamedProperties('computed', ast, j);
+  computeds.forEach((nodePath) => processComputed(nodePath, j));
+}
+
+function processComputed(nodePath, j) {
+  const node = nodePath.get().node;
+  const methodName = node.key.name;
+  const args = node.value.arguments;
+
+  if (args[args.length - 1].type === 'FunctionExpression') {
+    const newNode = buildComputedGet(methodName, args, j);
+    nodePath.replace(newNode);
+  } else {
+    // do complex version
+  }
+}
+
+function buildComputedGet(methodName, args, j) {
+  const newNode = j('class Fake {\n@computed()\nget foo() { }\n}')
+    .find(j.ClassMethod)
+    .get().node;
+
+  newNode.key.name = methodName;
+
+  const method = args.pop();
+  const blockStatement = method.body;
+
+  newNode.decorators[0].expression.arguments = args;
+  newNode.body = blockStatement;
+
+  return newNode;
+}
+
 function reviseComputedImport(ast, j) {
   if (usesComputed(ast, j)) {
     const finder = findImport('@ember/object', ast, j);
@@ -79,10 +115,14 @@ function reviseComputedImport(ast, j) {
 
     if (hasImport('@ember-decorators/object', ast, j)) {
       const imported = findImport('@ember-decorators/object', ast, j);
-      const added = j.importSpecifier(j.literal('computed'));
+      const added = j.importSpecifier(j.identifier('computed'));
       imported.get().node.specifiers.push(added);
     } else {
-      ast.get().node.program.body.unshift(`import { computed } from '@ember-decorators/object';`);
+      ast
+        .get()
+        .node.program.body.unshift(
+          `import { computed } from '@ember-decorators/object';`
+        );
     }
   }
 }
