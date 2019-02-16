@@ -4,5 +4,5 @@ const { runTransformTest } = require('codemod-cli');
 
 runTransformTest({
   type: 'jscodeshift',
-  name: 'decorate-computed-macros',
+  name: 'decorate',
 });

@@ -39,7 +39,8 @@ import {
 } from '@ember/object/computed';
 
 export default class Foo {
-  @service('thing') foo;
+  testService = service();
+  renamedService = service('testService');
 
   computedAliased = alias('testService.foo');
   computedAnd = and('foo', 'that.foo');
@@ -90,8 +91,4 @@ export default class Foo {
   computedUnion = union('foo');
   computedUniq = uniq('foo');
   computedUniqBy = uniqBy('foo', 'bar');
-
-  simpleComputed = computed('foo', function() {
-    return this.foo;
-  })
 }

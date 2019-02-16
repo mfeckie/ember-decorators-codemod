@@ -5,7 +5,7 @@ import { ASTNode } from "recast";
 const { getParser } = require('codemod-cli').jscodeshift;
 const { getOptions } = require('codemod-cli');
 
-const simpleMacros = [
+const simpleProperties = [
   'and',
   'alias',
   'bool',
@@ -32,6 +32,7 @@ const simpleMacros = [
   'or',
   'reads',
   'readOnly',
+  'service',
   'setDiff',
   'sum',
   'sort',
@@ -48,8 +49,10 @@ module.exports = function transformer(file: FileInfo, api: any) {
 
   renameImport('@ember/object/computed', '@ember-decorators/object/computed', ast, j);
   renameImport('@ember/object', '@ember-decorators/object', ast, j);
-  simpleMacros.forEach((macroName) => {
-    const properties = getNamedComputed(macroName, ast, j);
+  renameImport('@ember/service', '@ember-decorators/service', ast, j);
+
+  simpleProperties.forEach((macroName) => {
+    const properties = getNamedProperties(macroName, ast, j);
 
     properties.forEach((property) => {
       const dependentKeys = extractDependentKeys(property);
@@ -61,12 +64,6 @@ module.exports = function transformer(file: FileInfo, api: any) {
       property.replace(decorated);
     });
   });
-
-  const computedMacros = getNamedComputed('computed', ast, j);
-
-  computedMacros.forEach((property) => {
-
-  })
 
   return ast.toSource({ quote: 'single' });
 };
@@ -83,7 +80,7 @@ function renameImport(from: string, to: string, ast: Collection<any>, j: JSCodes
 }
 
 
-function getNamedComputed(name: string, ast: Collection<any>, j: JSCodeshift) {
+function getNamedProperties(name: string, ast: Collection<any>, j: JSCodeshift) {
   return ast.find(j.ClassProperty, {
     value: {
       type: 'CallExpression',

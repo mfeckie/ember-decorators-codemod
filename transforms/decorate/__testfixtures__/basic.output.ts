@@ -1,4 +1,4 @@
-import { inject as service } from '@ember/service';
+import { inject as service } from '@ember-decorators/service';
 
 import { computed } from '@ember-decorators/object';
 
@@ -39,7 +39,8 @@ import {
 } from '@ember-decorators/object/computed';
 
 export default class Foo {
-  @service('thing') foo;
+  @service() testService;
+  @service('testService') renamedService;
 
   @alias('testService.foo') computedAliased;
   @and('foo', 'that.foo') computedAnd;
