@@ -1,7 +1,12 @@
+import { ClassProperty } from 'ast-types/gen/nodes';
+import { Collection } from 'jscodeshift/src/Collection';
+import { ASTPath, JSCodeshift, FileInfo } from 'jscodeshift';
+import { NodePath } from 'recast';
+
 const { getParser } = require('codemod-cli').jscodeshift;
 const { getOptions } = require('codemod-cli');
 
-function getServices(classProperties, j) {
+function getServices(classProperties: Collection<ClassProperty>, j) {
   return classProperties
     .filter((path) => j(path).find(j.CallExpression, serviceCallExpression))
     .filter((node) => !node.value.decorators);
@@ -11,11 +16,11 @@ const serviceCallExpression = {
   callee: { type: 'Identifier', name: 'service' }
 };
 
-function hasRename(path, j) {
+function hasRename(path: ASTPath, j: JSCodeshift) {
   return j(path).find(j.StringLiteral).length !== 0;
 }
 
-module.exports = function transformer(file, api) {
+module.exports = function transformer(file: FileInfo, api: any) {
   const j = getParser(api);
   const options = getOptions();
   const output = [];
@@ -37,9 +42,9 @@ module.exports = function transformer(file, api) {
   return ast.toSource({ quote: 'single' });
 };
 
-function decorateService(path, j) {
+function decorateService(path: NodePath, j: JSCodeshift) {
   const name = path.node.key.name;
-  let rename;
+  let rename, replacement;
   if (hasRename(path, j)) {
     rename = j(path)
       .find(j.StringLiteral)
@@ -53,13 +58,13 @@ function decorateService(path, j) {
   path.replace(replacement);
 }
 
-function buildServiceRenamed(rename, name, j) {
+function buildServiceRenamed(rename: string, name: string, j: JSCodeshift) {
   return j(`class Fake { @service('${rename}') ${name}; }`)
     .find(j.ClassProperty)
     .get().node;
 }
 
-function buildService(name, j) {
+function buildService(name: string, j: JSCodeshift) {
   return j(`class Fake { @service ${name}; }`)
     .find(j.ClassProperty)
     .get().node;
