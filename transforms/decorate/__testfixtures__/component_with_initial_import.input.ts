@@ -6,7 +6,8 @@ import { action } from '@ember-decorators/object';
 export default class FooComponent extends Component {
   classNames = ['a', 'b', 'c'];
   someService = service();
-  foo = computed('bar', function () {
+
+  foo = computed('bar', function() {
     return '';
   });
 }
