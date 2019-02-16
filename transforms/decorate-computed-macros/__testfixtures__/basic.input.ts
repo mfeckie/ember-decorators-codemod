@@ -16,6 +16,7 @@ import {
   lt,
   lte,
   match,
+  map,
   max,
   min,
   none,
@@ -56,6 +57,9 @@ export default class Foo {
   computedLt = lt('foo', 1);
   computedLte = lte('foo', 0);
   computedMatch = match('foo', /someRegexp/);
+  computedMap = map('foo', function(item, index) {
+    return item.toUpperCase() + '!';
+  });
   computedMax = max('foo', 'bar');
   computedMin = min('foo', 'bar');
   computedNone = none('foo');

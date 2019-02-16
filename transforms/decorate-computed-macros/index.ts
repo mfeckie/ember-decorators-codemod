@@ -21,6 +21,7 @@ const simpleMacros = [
   'lt',
   'lte',
   'match',
+  'map',
   'max',
   'min',
   'none',

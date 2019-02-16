@@ -16,6 +16,7 @@ import {
   lt,
   lte,
   match,
+  map,
   max,
   min,
   none,
@@ -56,6 +57,9 @@ export default class Foo {
   @lt('foo', 1) computedLt;
   @lte('foo', 0) computedLte;
   @match('foo', /someRegexp/) computedMatch;
+  @map('foo', function(item, index) {
+    return item.toUpperCase() + '!';
+  }) computedMap;
   @max('foo', 'bar') computedMax;
   @min('foo', 'bar') computedMin;
   @none('foo') computedNone;
