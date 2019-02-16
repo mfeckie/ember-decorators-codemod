@@ -50,6 +50,7 @@ module.exports = function transformer(file, api) {
     j
   );
   renameImport('@ember/service', '@ember-decorators/service', ast, j);
+  reviseComputedImport(ast, j);
 
   simpleKeywords.forEach(function(keyword) {
     var properties = getNamedProperties(keyword, ast, j);
@@ -64,6 +65,43 @@ module.exports = function transformer(file, api) {
 
   return ast.toSource({ quote: 'single' });
 };
+
+function reviseComputedImport(ast, j) {
+  if (usesComputed(ast, j)) {
+    const finder = findImport('@ember/object', ast, j);
+    if (finder.length !== 0) {
+      const node = finder.get().node;
+      const filtered = node.specifiers.filter(
+        (item) => item.imported.name !== 'computed'
+      );
+      node.specifiers = filtered;
+    }
+
+    if (hasImport('@ember-decorators/object', ast, j)) {
+      const imported = findImport('@ember-decorators/object', ast, j);
+      const added = j.importSpecifier(j.literal('computed'));
+      imported.get().node.specifiers.push(added);
+    } else {
+      ast.get().node.program.body.unshift(`import { computed } from '@ember-decorators/object';`);
+    }
+  }
+}
+
+function usesComputed(ast, j) {
+  return getNamedProperties('computed', ast, j).length !== 0;
+}
+
+function findImport(name, ast, j) {
+  return ast.find(j.ImportDeclaration, {
+    source: {
+      value: name
+    }
+  });
+}
+
+function hasImport(name, ast, j) {
+  return findImport(name, ast, j).length !== 0;
+}
 
 function renameImport(from, to, ast, j) {
   var computedImport = ast.find(j.ImportDeclaration, {
