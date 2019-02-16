@@ -1,6 +1,6 @@
 import { inject as service } from '@ember/service';
 
-import { computed } from '@ember/object';
+import { computed, get, set } from '@ember/object';
 
 import {
   alias,
