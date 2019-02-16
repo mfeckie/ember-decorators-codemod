@@ -17,6 +17,7 @@ import {
   lte,
   match,
   map,
+  mapBy,
   max,
   min,
   none,
@@ -60,6 +61,7 @@ export default class Foo {
   computedMap = map('foo', function(item, index) {
     return item.toUpperCase() + '!';
   });
+  computedMayBy = mapBy('foo', 'bar');
   computedMax = max('foo', 'bar');
   computedMin = min('foo', 'bar');
   computedNone = none('foo');
