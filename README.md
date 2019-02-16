@@ -1,7 +1,9 @@
-# ember-decorators-codemod
+# ember-decorators-codemod [WIP]
 
 
-A collection of codemod's for ember-decorators-codemod.
+A collection of codemod's for converting class properties to decorated properties.
+
+This codemod is currently a work in progress, so treat it as experimental!  If you find a problem, please report it (or better still, fix and pull request :) )
 
 ## Usage
 
@@ -23,6 +25,8 @@ ember-decorators-codemod <TRANSFORM NAME> path/of/files/ or/some**/*glob.js
 <!--TRANSFORMS_END-->
 
 ## Contributing
+
+Pull requests are welcome!
 
 ### Installation
 
