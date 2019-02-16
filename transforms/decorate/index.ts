@@ -5,7 +5,7 @@ import { ASTNode } from "recast";
 const { getParser } = require('codemod-cli').jscodeshift;
 const { getOptions } = require('codemod-cli');
 
-const simpleProperties = [
+const simpleKeywords = [
   'and',
   'alias',
   'bool',
@@ -51,15 +51,15 @@ module.exports = function transformer(file: FileInfo, api: any) {
   renameImport('@ember/object', '@ember-decorators/object', ast, j);
   renameImport('@ember/service', '@ember-decorators/service', ast, j);
 
-  simpleProperties.forEach((macroName) => {
-    const properties = getNamedProperties(macroName, ast, j);
+  simpleKeywords.forEach((keyword) => {
+    const properties = getNamedProperties(keyword, ast, j);
 
     properties.forEach((property) => {
       const dependentKeys = extractDependentKeys(property);
       
       const name = property.node.key.name;
 
-      const decorated = buildDecorator(macroName, name, dependentKeys, j);
+      const decorated = buildDecorator(keyword, name, dependentKeys, j);
 
       property.replace(decorated);
     });
