@@ -77,11 +77,13 @@ function processComputed(nodePath, ast, j) {
   const node = nodePath.get().node;
   const methodName = node.key.name;
   const args = node.value.arguments;
+  const lastArgument = args[args.length -1];
 
-  if (args[args.length - 1].type === 'FunctionExpression') {
+  if (lastArgument.type === 'FunctionExpression' || lastArgument.type === 'ArrowFunctionExpression') {
     const newNode = buildComputedGet(methodName, args, j);
     nodePath.replace(newNode);
-  } else {
+  }
+  else {
     const newNode = buildComplexGetterSetter(methodName, args, j);
     nodePath.insertAfter(newNode.setter);
     nodePath.insertAfter(newNode.getter);
