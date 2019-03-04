@@ -1,4 +1,4 @@
-import { task, taskGroup, timeout } from 'ember-concurrency';
+import { task, timeout } from 'ember-concurrency';
 import Component from '@ember/component';
 
 export default class TaskComponent extends Component {

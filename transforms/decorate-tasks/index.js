@@ -27,15 +27,17 @@ module.exports = function transformer(file, api) {
   const j = getParser(api).withParser('babylon');
   const ast = j(file.source);
 
-
   if (hasTaskClassProperties(ast, j)) {
-
     calculateImports(ast, j);
 
     renameImport(ast, j);
 
     ast.find(j.ClassProperty, taskLookup).forEach((path) => {
       convertToDecorator(path, ast, j);
+    });
+
+    ast.find(j.ClassProperty, modifierLookup).forEach((path) => {
+      convertToModifiedDecorator(path, ast, j);
     });
   }
   return ast.toSource();
@@ -64,7 +66,14 @@ function renameImport(ast, j) {
   if (specififersToKeep.length > 0) {
     taskNode.specifiers = specififersToKeep;
 
-    const toImport = Array.from(imports).join(', ');
+    const toImport = Array.from(imports)
+      .map((importName) => {
+        if (importName === 'task') {
+          return importName;
+        }
+        return `${importName}Task`;
+      })
+      .join(', ');
 
     const newImport = `import { ${toImport} } from 'ember-concurrency-decorators';`;
 
@@ -88,6 +97,28 @@ function convertToDecorator(nodePath, ast, j) {
 
   newNode.key.name = methodName;
   newNode.body = functionBody;
+
+  nodePath.replace(newNode);
+}
+
+function convertToModifiedDecorator(nodePath, ast, j) {
+  const taskName = j(nodePath)
+    .find(j.MemberExpression)
+    .get().value.property.name;
+  imports.add(taskName);
+
+  const methodName = nodePath.get().node.key.name;
+  const functionBody = j(nodePath)
+    .find(j.BlockStatement)
+    .get().node;
+
+  const decoratorName = `${taskName}Task`;
+
+  const newNode = baseTaskNode(j);
+
+  newNode.key.name = methodName;
+  newNode.body = functionBody;
+  newNode.decorators[0].expression.name = decoratorName;
 
   nodePath.replace(newNode);
 }
