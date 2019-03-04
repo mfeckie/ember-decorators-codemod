@@ -15,6 +15,7 @@ ember-decorators-codemod decorate-computed-macros path/of/files/ or/some**/*glob
 ## Input / Output
 
 <!--FIXTURES_TOC_START-->
+* [arrow-function](#arrow-function)
 * [basic](#basic)
 * [complex_computed](#complex_computed)
 * [component](#component)
@@ -23,6 +24,51 @@ ember-decorators-codemod decorate-computed-macros path/of/files/ or/some**/*glob
 <!--FIXTURES_TOC_END-->
 
 <!--FIXTURES_CONTENT_START-->
+---
+<a id="arrow-function">**arrow-function**</a>
+
+**Input** (<small>[arrow-function.input.ts](transforms/decorate/__testfixtures__/arrow-function.input.ts)</small>):
+```ts
+import Component from '@ember/component';
+import { map } from '@ember/object/computed';
+import { computed } from '@ember/object';
+
+export default class MyComponent {
+  mapArrowParams = map('foo', (a, b) => {
+    return '';
+  });
+
+  mapArrowNoParams = map('foo', () => {
+    return '';
+  });
+
+  computedArrow = computed('foo', () => {
+    return '';
+  });
+}
+
+```
+
+**Output** (<small>[arrow-function.output.ts](transforms/decorate/__testfixtures__/arrow-function.output.ts)</small>):
+```ts
+import { computed } from '@ember-decorators/object';
+import Component from '@ember/component';
+import { map } from '@ember-decorators/object/computed';
+
+export default class MyComponent {
+  @map('foo', (a, b) => {
+    return '';
+  }) mapArrowParams;
+  @map('foo', () => {
+    return '';
+  }) mapArrowNoParams;
+  @computed('foo')
+  get computedArrow() {
+    return '';
+  }
+}
+
+```
 ---
 <a id="basic">**basic**</a>
 

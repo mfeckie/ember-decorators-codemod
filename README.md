@@ -26,6 +26,7 @@ ember-decorators-codemod <TRANSFORM NAME> path/of/files/ or/some**/*glob.js
 
 <!--TRANSFORMS_START-->
 * [decorate](transforms/decorate/README.md)
+* [decorate-tasks](transforms/decorate-tasks/README.md)
 <!--TRANSFORMS_END-->
 
 ## Contributing
