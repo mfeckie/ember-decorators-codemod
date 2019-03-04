@@ -27,10 +27,12 @@ module.exports = function transformer(file, api) {
   const j = getParser(api).withParser('babylon');
   const ast = j(file.source);
 
+
   if (hasTaskClassProperties(ast, j)) {
 
-    renameImport(ast, j);
     calculateImports(ast, j);
+
+    renameImport(ast, j);
 
     ast.find(j.ClassProperty, taskLookup).forEach((path) => {
       convertToDecorator(path, ast, j);
@@ -61,9 +63,8 @@ function renameImport(ast, j) {
 
   if (specififersToKeep.length > 0) {
     taskNode.specifiers = specififersToKeep;
-    const toImport = specififersToChange
-      .map((node) => node.imported.name)
-      .join(', ');
+
+    const toImport = Array.from(imports).join(', ');
 
     const newImport = `import { ${toImport} } from 'ember-concurrency-decorators';`;
 
@@ -107,8 +108,15 @@ function calculateImports(ast, j) {
 
     imports.add(taskModifier);
   });
+
+  if (ast.find(j.ClassProperty, taskLookup).length > 0) {
+    imports.add('task');
+  }
 }
 
 function hasTaskClassProperties(ast, j) {
-  return ast.find(j.ClassProperty, taskLookup).length !== 0;
+  const classProperties = ast.find(j.ClassProperty, taskLookup).length !== 0;
+  const modfiers = ast.find(j.ClassProperty, modifierLookup).length !== 0;
+
+  return classProperties || modfiers;
 }
