@@ -1,7 +1,7 @@
 {
   "name": "ember-decorators-codemod",
   "author": "Martin Feckie <mfeckie@gmail.com>",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "scripts": {
     "test": "codemod-cli test",
     "update-docs": "codemod-cli update-docs"

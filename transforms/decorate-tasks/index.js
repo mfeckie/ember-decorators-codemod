@@ -131,7 +131,7 @@ function convertToModifiedDecorator(nodePath, ast, j) {
 }
 
 function baseTaskNode(j) {
-  parser = j.withParser('babylon');
+  const parser = j.withParser('babylon');
   const fakeNode = parser(`class Fake { @task\n*foo() {}\n }`);
   return fakeNode.find(j.ClassMethod).get().node;
 }
