@@ -24,7 +24,7 @@ const modifierLookup = {
 const imports = new Set();
 
 module.exports = function transformer(file, api) {
-  const j = getParser(api).withParser('babylon');
+  const j = getParser(api).withParser('ts');
   const ast = j(file.source);
 
   if (hasTaskClassProperties(ast, j)) {
@@ -95,11 +95,13 @@ function convertToDecorator(nodePath, ast, j) {
   imports.add('task');
   const methodName = nodePath.value.key.name;
   const functionBody = nodePath.value.value.arguments[0].body;
+  const params = nodePath.value.value.arguments[0].params;
 
   const newNode = baseTaskNode(j);
 
   newNode.key.name = methodName;
   newNode.body = functionBody;
+  newNode.params = params;
 
   nodePath.replace(newNode);
 }
@@ -114,19 +116,23 @@ function convertToModifiedDecorator(nodePath, ast, j) {
     .find(j.BlockStatement)
     .get().node;
 
+  const params = j(nodePath).find(j.FunctionExpression).get().node.params;
+
   const decoratorName = `${taskName}Task`;
 
   const newNode = baseTaskNode(j);
 
   newNode.key.name = methodName;
   newNode.body = functionBody;
+  newNode.params = params;
   newNode.decorators[0].expression.name = decoratorName;
 
   nodePath.replace(newNode);
 }
 
 function baseTaskNode(j) {
-  const fakeNode = j(`class Fake { @task\n*foo() {}\n }`);
+  parser = j.withParser('babylon');
+  const fakeNode = parser(`class Fake { @task\n*foo() {}\n }`);
   return fakeNode.find(j.ClassMethod).get().node;
 }
 

@@ -3,7 +3,7 @@ import Component from '@ember/component';
 
 export default class TaskComponent extends Component {
   @dropTask
-  *dropTaskMethodName() {
+  *dropTaskMethodName(this: TaskComponent, someArgument: string) {
     yield true;
   }
   @restartableTask

@@ -4,7 +4,7 @@ import Component from '@ember/component';
 
 export default class TaskComponent extends Component {
   @task
-  *simpleTask() {
+  *simpleTask(this: Foo) {
     yield timeout(1000);
   }
 }

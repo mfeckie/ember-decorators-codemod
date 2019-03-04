@@ -2,7 +2,7 @@ import { task } from 'ember-concurrency';
 import Component from '@ember/component';
 
 export default class TaskComponent extends Component {
-  dropTaskMethodName = task(function*() {
+  dropTaskMethodName = task(function*(this: TaskComponent, someArgument: string) {
     yield true;
   }).drop();
   restartableTaskMethodName = task(function*() {
