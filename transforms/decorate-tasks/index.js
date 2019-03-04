@@ -30,8 +30,6 @@ module.exports = function transformer(file, api) {
   if (hasTaskClassProperties(ast, j)) {
     calculateImports(ast, j);
 
-    renameImport(ast, j);
-
     ast.find(j.ClassProperty, taskLookup).forEach((path) => {
       convertToDecorator(path, ast, j);
     });
@@ -39,7 +37,10 @@ module.exports = function transformer(file, api) {
     ast.find(j.ClassProperty, modifierLookup).forEach((path) => {
       convertToModifiedDecorator(path, ast, j);
     });
+
+    renameImport(ast, j);
   }
+
   return ast.toSource();
 };
 
@@ -52,15 +53,17 @@ function renameImport(ast, j) {
 
   const taskNode = taskImport.get().node;
 
-  const specififersToChange = taskNode.specifiers.filter(
-    (node) => node.imported.name !== 'timeout'
-  );
   const specififersToKeep = taskNode.specifiers.filter(
     (node) => node.imported.name === 'timeout'
   );
 
   if (specififersToKeep.length === 0) {
-    taskNode.source = 'ember-concurrency-decorators';
+    taskNode.source = "'ember-concurrency-decorators'";
+    const importSpecifiers = Array.from(imports).map((importName) => {
+      const name = importName === 'task' ? importName : `${importName}Task`;
+      return j.importSpecifier(j.identifier(name));
+    });
+    taskNode.specifiers = importSpecifiers;
   }
 
   if (specififersToKeep.length > 0) {
@@ -89,8 +92,8 @@ function renameImport(ast, j) {
 */
 
 function convertToDecorator(nodePath, ast, j) {
+  imports.add('task');
   const methodName = nodePath.value.key.name;
-  const decoratorName = nodePath.value.value.callee.name;
   const functionBody = nodePath.value.value.arguments[0].body;
 
   const newNode = baseTaskNode(j);
@@ -105,7 +108,6 @@ function convertToModifiedDecorator(nodePath, ast, j) {
   const taskName = j(nodePath)
     .find(j.MemberExpression)
     .get().value.property.name;
-  imports.add(taskName);
 
   const methodName = nodePath.get().node.key.name;
   const functionBody = j(nodePath)
@@ -139,10 +141,6 @@ function calculateImports(ast, j) {
 
     imports.add(taskModifier);
   });
-
-  if (ast.find(j.ClassProperty, taskLookup).length > 0) {
-    imports.add('task');
-  }
 }
 
 function hasTaskClassProperties(ast, j) {

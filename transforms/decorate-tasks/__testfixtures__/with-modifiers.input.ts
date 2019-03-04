@@ -1,21 +1,21 @@
-import { task, timeout } from 'ember-concurrency';
+import { task } from 'ember-concurrency';
 import Component from '@ember/component';
 
 export default class TaskComponent extends Component {
   dropTaskMethodName = task(function*() {
-    yield timeout(1000);
+    yield true;
   }).drop();
   restartableTaskMethodName = task(function*() {
-    yield timeout(1000);
+    yield true;
   }).restartable();
   enqueueTaskMethodName = task(function*() {
-    yield timeout(1000);
+    yield true;
   }).enqueue();
   keepLatestTaskMethodName = task(function*() {
-    yield timeout(1000);
+    yield true;
   }).keepLatest();
 
   basicTask = task(function*(){
-    yield timeout(1000);
+    yield true;
   });
 }
