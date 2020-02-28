@@ -40,7 +40,7 @@ var simpleKeywords = [
 ];
 
 module.exports = function transformer(file, api) {
-  var j = getParser(api);
+  var j = getParser(api).withParser('ts');
   var ast = j(file.source);
 
   renameImport(
